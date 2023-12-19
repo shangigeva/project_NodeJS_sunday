@@ -1,4 +1,5 @@
 // pnpm add mongoose
+import { Logger } from "../logs/logger";
 import { initDB } from "./initDB";
 import mongoose from "mongoose";
 
@@ -8,7 +9,7 @@ const connect = async () => {
     const connectionString = process.env.DB_CONNECTION_STRING;
 
     if (!connectionString) {
-      console.error("DB_CONNECTION_STRING IS NOT DEFINED IN your .env file");
+      Logger.error("DB_CONNECTION_STRING IS NOT DEFINED IN your .env file");
       return;
     }
 
@@ -19,7 +20,7 @@ const connect = async () => {
     //init the database:
     await initDB();
   } catch (err) {
-    console.error("Error Connecting to database", err);
+    Logger.error("Error Connecting to database", err);
   }
 };
 

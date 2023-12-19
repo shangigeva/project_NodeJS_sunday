@@ -1,10 +1,21 @@
 import { Router } from "express";
 import { Card } from "../database/model/cards";
 import { auth } from "../service/auth-service";
+import { validateCard } from "../middleware/validation";
+import { ICard } from "../@types/card";
+import { isBusinessUser } from "../middleware/is-business";
 
 const router = Router();
-
-// GET all cards
+// CREATE CARD
+router.post("/", isBusinessUser, validateCard, async (req, res, next) => {
+  try {
+    const saveCard = await Card.create(req.body as ICard);
+    res.status(201).json({ message: "Saved", user: saveCard });
+  } catch (err) {
+    next(err);
+  }
+});
+// GET ALL CARDS
 router.get("/", async (req, res) => {
   try {
     const allCards = await Card.find();
@@ -14,7 +25,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET my cards
+// GET MY CARDS
 router.get("/my-cards", async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]!;

@@ -1,17 +1,4 @@
-type IAddress = {
-  state?: string;
-  country: string;
-  city: string;
-  street: string;
-  houseNumber: number;
-  zip?: number;
-};
-
-type IImage = {
-  alt: string;
-  url: string;
-};
-type ICard = {
+type ICardInput = {
   title: string;
   subtitle: string;
   description: string;
@@ -21,5 +8,13 @@ type ICard = {
   address: IAddress;
   image?: IImage;
 };
+export type ICard = ICardInput & {
+  //JWT=> userid
+  //bizNumber => random Unique
+  bizNumber?: number;
+  userId?: string;
 
-export { ICard, IImage, IAddress };
+  _id?: string;
+  likes: string[];
+  createdAt: Date;
+};

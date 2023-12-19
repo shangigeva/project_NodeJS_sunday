@@ -15,7 +15,16 @@ const cardSchema = new Schema<ICard>({
     required: true,
   },
   web: { type: String, minlength: 14 },
-  address: addressSchema,
-  image: imageSchema,
+  address: { type: addressSchema, required: true },
+  image: { type: imageSchema, required: true },
+  userId: { type: String, required: true },
+  bizNumber: {
+    type: Number,
+    required: false,
+    default: () => Math.round(Math.random() * 1_000_000),
+    // choose randon number
+    unique: true,
+  },
+  likes: [{ type: String }],
 });
 export { cardSchema };

@@ -4,7 +4,7 @@ import { auth } from "../service/auth-service";
 import { User } from "../database/model/user";
 
 const extractToken = (req: Request) => {
-  const authHeader = req.header("Authorization"); //"bearer aslkfdjasfl2ejroi2ejwroi32jerf"
+  const authHeader = req.header("Authorization");
   if (
     authHeader &&
     authHeader.length > 7 &&

@@ -7,18 +7,19 @@ import { isAdmin } from "../middleware/is-admin";
 import { isAdminOrUser } from "../middleware/is-admin-or-user";
 import { isUser } from "../middleware/is-user";
 import { auth } from "../service/auth-service";
+import { Logger } from "../logs/logger";
 
 const router = Router();
 // GET all users
 router.get("/", isAdmin, async (req, res, next) => {
   try {
     const allUsers = await User.find();
-
     res.json(allUsers);
   } catch (e) {
     next(e);
   }
 });
+
 // EDIT user
 router.put("/:id", isUser, validateRegistration, async (req, res, next) => {
   //hash the password:
@@ -28,10 +29,9 @@ router.put("/:id", isUser, validateRegistration, async (req, res, next) => {
     req.body,
     { new: true }
   );
-  //not null check
-  //remove the password
   res.json(savedUser);
 });
+
 // GET a user
 router.get("/:id", isAdminOrUser, async (req, res, next) => {
   try {
@@ -59,22 +59,51 @@ router.post("/login", validateLogin, async (req, res, next) => {
   try {
     //check the request:
     const { email, password } = req.body as ILogin;
-
     //call the service:
     const jwt = await validateUser(email, password);
-
     //response
     res.json(jwt);
   } catch (e) {
     next(e);
   }
 });
-
-router.patch("/:id", isUser, validateRegistration, async (req, res) => {
+// UPGRADE TO BUSINESS
+router.patch("/:id", isAdminOrUser, async (req, res, next) => {
   try {
-  } catch {}
+    const { id } = req.params;
+    const { isBusiness } = req.body;
+
+    // Validate if isBusiness is a boolean (you can customize this validation)
+    if (typeof isBusiness !== "boolean") {
+      return res.status(400).json({ message: "Invalid isBusiness value" });
+    }
+    // Update the user's isBusiness property
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: id },
+      { $set: { isBusiness: isBusiness } },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    Logger.verbose("updated the user's isBusiness property");
+    return res.status(200).json({ message: "Update successful", updatedUser });
+  } catch (e) {
+    next(e);
+  }
 });
 
+// DELETE USER
+router.delete("/:id", isAdminOrUser, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const deleteUser = await User.findOneAndDelete({ _id: id });
+    Logger.verbose("deleted the user");
+    return res.json(deleteUser);
+  } catch (e) {
+    next(e);
+  }
+});
 export { router as usersRouter };
 
 //Database:

@@ -11,7 +11,7 @@ import { Logger } from "../logs/logger";
 
 const router = Router();
 // GET all users
-router.get("/", isAdmin, async (req, res, next) => {
+router.get("/users", async (req, res, next) => {
   try {
     const allUsers = await User.find();
     res.json(allUsers);
@@ -45,7 +45,7 @@ router.get("/:id", isAdminOrUser, async (req, res, next) => {
 });
 
 // REGISTER
-router.post("/", validateRegistration, async (req, res, next) => {
+router.post("/register", validateRegistration, async (req, res, next) => {
   try {
     const saved = await createUser(req.body as IUser);
     res.status(201).json({ message: "Saved", user: saved });
@@ -57,39 +57,42 @@ router.post("/", validateRegistration, async (req, res, next) => {
 // LOGIN
 router.post("/login", validateLogin, async (req, res, next) => {
   try {
-    //check the request:
+    // Extract data from the request
     const { email, password } = req.body as ILogin;
-    //call the service:
-    const jwt = await validateUser(email, password);
-    //response
-    res.json(jwt);
-  } catch (e) {
-    next(e);
-  }
-});
-// UPGRADE TO BUSINESS
-router.patch("/:id", isAdminOrUser, async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { isBusiness } = req.body;
+    console.log(req.body);
 
-    // Validate if isBusiness is a boolean (you can customize this validation)
-    if (typeof isBusiness !== "boolean") {
-      return res.status(400).json({ message: "Invalid isBusiness value" });
+    try {
+      const jwt = await validateUser(email, password);
+      console.log(jwt);
+
+      // Successful login
+      res.json(jwt);
+    } catch (e) {
+      // Failed login
+      Logger.error("Login failed:", e);
+      // Check if the user is blocked
+      if (e === "User is blocked. Try again later.") {
+        // Send a response indicating that the user is blocked
+        return res
+          .status(401)
+          .json({ error: "User is blocked. Try again later." });
+      } else {
+        // Send a generic error response
+        res.status(401).json({ error: "Invalid email or password." });
+        const userId = req.user?._id;
+        if (userId) {
+          try {
+            // Handle failed login attempts for the user
+            await auth.handleFailedLogin(userId);
+          } catch (error) {
+            console.error("Failed to handle login:", error);
+          }
+        }
+      }
     }
-    // Update the user's isBusiness property
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: id },
-      { $set: { isBusiness: isBusiness } },
-      { new: true }
-    );
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    Logger.verbose("updated the user's isBusiness property");
-    return res.status(200).json({ message: "Update successful", updatedUser });
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    // Handle other errors
+    next(error);
   }
 });
 
@@ -105,8 +108,3 @@ router.delete("/:id", isAdminOrUser, async (req, res, next) => {
   }
 });
 export { router as usersRouter };
-
-//Database:
-//connect, mongo-schema, model
-//Router:
-//validate body (joi-schema), other route logic

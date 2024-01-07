@@ -1,20 +1,20 @@
 import { Schema } from "mongoose";
 
 import { IUser } from "../../@types/user";
-import { nameSchema } from "./name-schema";
-import { imageSchema } from "./image-schema";
-import { addressSchema } from "./address-schema";
 
 const userSchema = new Schema<IUser>({
-  name: nameSchema,
-  address: addressSchema,
-  image: {
-    type: imageSchema,
-    required: false,
-    default: {
-      alt: "user-profile",
-      url: "https://picsum.photos/200/300",
-    },
+  firstName: {
+    required: true,
+    type: String,
+    minlength: 2,
+    maxlength: 256,
+  },
+
+  lastName: {
+    required: true,
+    type: String,
+    minlength: 2,
+    maxlength: 256,
   },
   phone: {
     required: true,
@@ -32,7 +32,7 @@ const userSchema = new Schema<IUser>({
   password: {
     required: true,
     type: String,
-    minlength: 7,
+    minlength: 8,
     maxlength: 100,
   },
   isAdmin: {
@@ -40,16 +40,13 @@ const userSchema = new Schema<IUser>({
     required: false,
     default: false,
   },
-  isBusiness: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
   createdAt: {
     type: Date,
     required: false,
     default: new Date(),
   },
+  failedLoginAttempts: { type: Number, default: 0, required: false },
+  lastFailedLogin: { type: Date, required: false },
 });
 
 export { userSchema };

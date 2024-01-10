@@ -23,6 +23,7 @@ type IJWTDecoded = {
 };
 
 type IJWTPayload = {
+  _id: string;
   email: string;
   isAdmin: boolean;
 };

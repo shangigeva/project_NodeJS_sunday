@@ -12,6 +12,8 @@ const extractToken = (req: Request) => {
   ) {
     return authHeader.substring(7);
   }
+  console.log("omer");
+
   throw new BizCardsError("token is missing in Authorization header", 400);
 };
 const validateToken: RequestHandler = async (req, res, next) => {

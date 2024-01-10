@@ -42,6 +42,7 @@ const validateUser = async (email: string, password: string) => {
 
   // Generate the JWT
   const jwt = auth.generateJWT({
+    _id: user._id,
     email: user.email,
     isAdmin: user.isAdmin || false,
   });

@@ -1,24 +1,24 @@
 import { Router } from "express";
-import { Card } from "../database/model/tasks";
 import { auth } from "../service/auth-service";
 import { validateTask } from "../middleware/validation";
-import { ICard, ICardInput } from "../@types/task";
+import { ITask, ITaskInput } from "../@types/task";
 import { validateToken } from "../middleware/validate-token";
 import { BizCardsError } from "../error/biz-cards-error";
 import { isUser } from "../middleware/is-user";
 import { isAdminOrUser } from "../middleware/is-admin-or-user";
 import { isAdmin } from "../middleware/is-admin";
-import { createTask } from "../service/card-service";
+import { createTask } from "../service/task-service";
+import { Task } from "../database/model/tasks";
 
 const router = Router();
-// CREATE CARD
+// CREATE TASK
 router.post("/", validateTask, async (req, res, next) => {
   try {
     const userId = req.user?._id;
     if (!userId) {
       throw new BizCardsError("User must have an id", 500);
     }
-    const saveTask = await createTask(req.body as ICardInput, userId);
+    const saveTask = await createTask(req.body as ITaskInput, userId);
     res.status(201).json({ message: "task saved", user: saveTask });
   } catch (e) {
     next(e);
@@ -27,8 +27,8 @@ router.post("/", validateTask, async (req, res, next) => {
 // GET ALL CARDS
 router.get("/", async (req, res, next) => {
   try {
-    const allCards = await Card.find();
-    return res.json(allCards);
+    const allTasks = await Task.find();
+    return res.json(allTasks);
   } catch (e) {
     next(e);
   }
@@ -38,8 +38,8 @@ router.get("/", async (req, res, next) => {
 router.get("/my-cards", validateToken, async (req, res, next) => {
   try {
     const userId = req.user?._id!;
-    const cards = await Card.find({ userId });
-    return res.json(cards);
+    const tasks = await Task.find({ userId });
+    return res.json(tasks);
   } catch (e) {
     next(e);
   }
@@ -48,13 +48,13 @@ router.get("/my-cards", validateToken, async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    const card = await Card.findById(id);
-    return res.json(card);
+    const task = await Task.findById(id);
+    return res.json(task);
   } catch (e) {
     next(e);
   }
 });
-// EDIT CARD
+// EDIT TASK
 router.put("/:id", validateTask, async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -62,15 +62,15 @@ router.put("/:id", validateTask, async (req, res, next) => {
     if (!userId) {
       throw new BizCardsError("User must have an id", 500);
     }
-    const card = await Card.findOneAndUpdate({ _id: id, userId }, req.body, {
+    const task = await Task.findOneAndUpdate({ _id: id, userId }, req.body, {
       new: true,
     });
-    if (!card) {
+    if (!task) {
       return res
         .status(404)
         .json({ error: "Card not found or user does not have permission" });
     }
-    res.json({ card });
+    res.json({ task });
   } catch (e) {
     next(e);
   }
@@ -79,7 +79,7 @@ router.put("/:id", validateTask, async (req, res, next) => {
 router.delete("/:id", isAdminOrUser, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deleteCard = await Card.findByIdAndDelete({ _id: id });
+    const deleteCard = await Task.findByIdAndDelete({ _id: id });
     return res.json(deleteCard);
   } catch (e) {
     next(e);
@@ -93,12 +93,12 @@ router.patch("/:id", validateToken, async (req, res, next) => {
     if (!userId) {
       throw new BizCardsError("User must have an id", 500);
     }
-    const card = await Card.findById(id);
-    if (!card) {
-      return res.status(404).json({ error: "Card not found" });
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ error: "task not found" });
     }
-    await card.save();
-    res.json({ card });
+    await task.save();
+    res.json({ task });
   } catch (e) {
     next(e);
   }
@@ -113,21 +113,21 @@ router.patch("/:id/changeBizNum", isAdmin, async (req, res, next) => {
         .status(400)
         .json({ error: "bizNumber is required for PATCH request" });
     }
-    const card = await Card.findOneAndUpdate(
+    const task = await Task.findOneAndUpdate(
       { _id: id },
       { bizNumber },
       {
         new: true,
       }
     );
-    if (!card) {
+    if (!task) {
       return res
         .status(404)
-        .json({ error: "Card not found or user does not have permission" });
+        .json({ error: "Task not found or user does not have permission" });
     }
-    res.json({ card });
+    res.json({ task });
   } catch (e) {
     next(e);
   }
 });
-export { router as cardRouter };
+export { router as taskRouter };

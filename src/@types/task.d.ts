@@ -1,7 +1,7 @@
-type ICardInput = {
+type ITaskInput = {
   title: string;
 };
-export type ICard = ICardInput & {
+export type ITask = ITaskInput & {
   //JWT=> userid
   //bizNumber => random Unique
   bizNumber?: number;

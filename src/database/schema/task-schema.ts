@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
-import { ICard } from "../../@types/task";
+import { ITask } from "../../@types/task";
 
-const taskShema = new Schema<ICard>({
+const taskShema = new Schema<ITask>({
   userId: { type: String, required: true },
   bizNumber: {
     type: Number,

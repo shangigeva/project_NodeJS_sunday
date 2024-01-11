@@ -34,6 +34,8 @@ router.put("/:id", isUser, validateRegistration, async (req, res, next) => {
 
 // GET a user
 router.get("/:id", isAdminOrUser, async (req, res, next) => {
+  console.log(req.params);
+
   try {
     const { id } = req.params;
     const user = (await User.findById(id).lean()) as IUser;

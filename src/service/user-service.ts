@@ -18,7 +18,7 @@ const validateUser = async (email: string, password: string) => {
   const maxAttempts = 3;
   if (user.failedLoginAttempts >= maxAttempts && user.lastFailedLogin) {
     const now = new Date();
-    const blockDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const blockDuration = 24 * 60 * 60 * 1000;
     const timeDiff = now.getTime() - user.lastFailedLogin.getTime();
     if (timeDiff <= blockDuration) {
       // User is blocked

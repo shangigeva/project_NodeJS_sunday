@@ -1,6 +1,6 @@
-import { Card } from "../database/model/cards";
-import { ICardInput } from "./../@types/card.d";
-const createCard = async (data: ICardInput, userId: string) => {
+import { Card } from "../database/model/tasks";
+import { ICardInput } from "../@types/task";
+const createTask = async (data: ICardInput, userId: string) => {
   //bizNumber, userId
   const card = new Card(data);
 
@@ -18,4 +18,4 @@ const createCard = async (data: ICardInput, userId: string) => {
   return card.save();
 };
 
-export { createCard };
+export { createTask };

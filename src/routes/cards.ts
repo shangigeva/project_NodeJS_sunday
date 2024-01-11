@@ -1,25 +1,25 @@
 import { Router } from "express";
-import { Card } from "../database/model/cards";
+import { Card } from "../database/model/tasks";
 import { auth } from "../service/auth-service";
-import { validateCard } from "../middleware/validation";
-import { ICard, ICardInput } from "../@types/card";
+import { validateTask } from "../middleware/validation";
+import { ICard, ICardInput } from "../@types/task";
 import { validateToken } from "../middleware/validate-token";
 import { BizCardsError } from "../error/biz-cards-error";
-import { createCard } from "../service/card-service";
 import { isUser } from "../middleware/is-user";
 import { isAdminOrUser } from "../middleware/is-admin-or-user";
 import { isAdmin } from "../middleware/is-admin";
+import { createTask } from "../service/card-service";
 
 const router = Router();
 // CREATE CARD
-router.post("/", validateCard, async (req, res, next) => {
+router.post("/", validateTask, async (req, res, next) => {
   try {
     const userId = req.user?._id;
     if (!userId) {
       throw new BizCardsError("User must have an id", 500);
     }
-    const saveCard = await createCard(req.body as ICardInput, userId);
-    res.status(201).json({ message: "card saved", user: saveCard });
+    const saveTask = await createTask(req.body as ICardInput, userId);
+    res.status(201).json({ message: "task saved", user: saveTask });
   } catch (e) {
     next(e);
   }
@@ -55,7 +55,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 // EDIT CARD
-router.put("/:id", validateCard, async (req, res, next) => {
+router.put("/:id", validateTask, async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user?._id;
@@ -97,7 +97,6 @@ router.patch("/:id", validateToken, async (req, res, next) => {
     if (!card) {
       return res.status(404).json({ error: "Card not found" });
     }
-    card.likes.push(userId);
     await card.save();
     res.json({ card });
   } catch (e) {

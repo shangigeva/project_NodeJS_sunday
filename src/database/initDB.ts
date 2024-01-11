@@ -1,6 +1,6 @@
 import { Logger } from "../logs/logger";
 import { cards } from "./cards";
-import { Card } from "./model/cards";
+import { Card } from "./model/tasks";
 import { User } from "./model/user";
 import { users } from "./users";
 const initDB = async () => {

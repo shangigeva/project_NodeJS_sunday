@@ -1,9 +1,9 @@
-import { joiCardSchema } from "../../joi/cards.joi";
+import { joiCardSchema } from "../../joi/tasks.joi";
 import { joiLoginSchema } from "../../joi/login.joi";
 import { joiUserSchema } from "../../joi/user.joi";
 import { validateSchema } from "./validate-schema";
 
 const validateRegistration = validateSchema(joiUserSchema);
 const validateLogin = validateSchema(joiLoginSchema);
-const validateCard = validateSchema(joiCardSchema);
-export { validateRegistration, validateLogin, validateCard };
+const validateTask = validateSchema(joiCardSchema);
+export { validateRegistration, validateLogin, validateTask };

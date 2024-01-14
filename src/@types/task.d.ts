@@ -3,9 +3,12 @@ type ITaskInput = {
 };
 export type ITask = ITaskInput & {
   //JWT=> userid
-  //bizNumber => random Unique
-  bizNumber?: number;
+  TaskNumb?: number;
   userId?: string;
   _id?: string;
   createdAt: Date;
+  title: string;
+  status: String;
+  priority: String;
+  label: String;
 };

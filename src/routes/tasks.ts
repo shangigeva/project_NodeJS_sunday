@@ -83,16 +83,22 @@ router.put("/:id", validateTask, validateToken, async (req, res, next) => {
     next(e);
   }
 });
-// DELETE CARD
-router.delete("/:id", isAdminOrUser, async (req, res, next) => {
+// DELETE TASK
+router.delete("/:id", isAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
     const deleteCard = await Task.findByIdAndDelete({ _id: id });
+
+    if (!deleteCard) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
     return res.json(deleteCard);
   } catch (e) {
     next(e);
   }
 });
+
 // LIKE CARD
 router.patch("/:id", validateToken, async (req, res, next) => {
   try {

@@ -15,4 +15,12 @@ export const users = [
     password: "ababABAB1234!",
     isAdmin: false,
   },
+  {
+    firstName: "Bruce",
+    lastName: "Willis",
+    phone: "050-8123091",
+    email: "asas@mail.com",
+    password: "ababABAB1234!",
+    isAdmin: false,
+  },
 ];

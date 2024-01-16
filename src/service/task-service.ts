@@ -1,16 +1,16 @@
 import { ITaskInput } from "../@types/task";
 import { Task } from "../database/model/tasks";
 const createTask = async (data: ITaskInput, userId: string) => {
-  //bizNumber, userId
+  //TaskNumb, userId
   const task = new Task(data);
 
-  Task.userId = userId;
+  // Task.userId = userId;
   //random number that does not exist in the database:
   while (true) {
     const random = Math.floor(Math.random() * 1_000_000);
-    const dbRes = await Task.findOne({ bizNumber: random });
+    const dbRes = await Task.findOne({ TaskNumb: random });
     if (!dbRes) {
-      Task.bizNumber = random;
+      // Task.TaskNumb = random;
       break;
     }
   }

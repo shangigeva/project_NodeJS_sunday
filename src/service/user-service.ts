@@ -1,6 +1,6 @@
 import { IUser } from "../@types/user";
 import { User } from "../database/model/user";
-import { BizCardsError } from "../error/biz-cards-error";
+import { TaskError } from "../error/tasks-error";
 import { auth } from "./auth-service";
 
 const createUser = async (userData: IUser) => {
@@ -12,7 +12,7 @@ const validateUser = async (email: string, password: string) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new BizCardsError("Bad credentials", 401);
+    throw new TaskError("Bad credentials", 401);
   }
   // Check if the user is blocked
   const maxAttempts = 3;
@@ -22,7 +22,7 @@ const validateUser = async (email: string, password: string) => {
     const timeDiff = now.getTime() - user.lastFailedLogin.getTime();
     if (timeDiff <= blockDuration) {
       // User is blocked
-      throw new BizCardsError("User is blocked. Try again later.", 401);
+      throw new TaskError("User is blocked. Try again later.", 401);
     } else {
       // Reset failed attempts if the block duration has passed
       await User.findByIdAndUpdate(user._id, {
@@ -37,7 +37,7 @@ const validateUser = async (email: string, password: string) => {
   if (!isPasswordValid) {
     // If the password is invalid, call handleFailedLogin
     await auth.handleFailedLogin(user._id);
-    throw new BizCardsError("Bad credentials", 401);
+    throw new TaskError("Bad credentials", 401);
   }
 
   // Generate the JWT

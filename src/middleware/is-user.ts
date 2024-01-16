@@ -2,7 +2,7 @@ import { RequestHandler, Request } from "express";
 import { auth } from "../service/auth-service";
 import { User } from "../database/model/user";
 import { extractToken } from "./is-admin";
-import { BizCardsError } from "../error/biz-cards-error";
+import { TaskError } from "../error/tasks-error";
 import { IUser } from "../@types/user";
 
 const isUser: RequestHandler = async (req, res, next) => {
@@ -16,7 +16,7 @@ const isUser: RequestHandler = async (req, res, next) => {
 
     req.user = user;
 
-    if (!user) throw new BizCardsError("User does not exist", 401);
+    if (!user) throw new TaskError("User does not exist", 401);
 
     if (id == user?._id) return next();
 

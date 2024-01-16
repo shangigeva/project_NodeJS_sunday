@@ -1,5 +1,5 @@
 import { RequestHandler, Request } from "express";
-import { BizCardsError } from "../error/biz-cards-error";
+import { TaskError } from "../error/tasks-error";
 import { auth } from "../service/auth-service";
 import { User } from "../database/model/user";
 
@@ -15,7 +15,7 @@ const extractToken = (req: Request) => {
   }
   console.log("adm");
 
-  throw new BizCardsError("token is missing in Authorization header", 400);
+  throw new TaskError("token is missing in Authorization header", 400);
 };
 
 const isAdmin: RequestHandler = async (req, res, next) => {

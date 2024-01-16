@@ -1,7 +1,7 @@
 import { Logger } from "../logs/logger";
-import { cards } from "./cards";
-import { Card } from "./model/tasks";
+import { Task } from "./model/tasks";
 import { User } from "./model/user";
+import { tasks } from "./tasks";
 import { users } from "./users";
 const initDB = async () => {
   //add 3 users
@@ -12,12 +12,12 @@ const initDB = async () => {
     Logger.verbose("Added user: ", saved);
   }
 
-  //add 3 cards
-  const cardsCount = await Card.countDocuments();
+  //add 3 tasks
+  const cardsCount = await Task.countDocuments();
   if (cardsCount != 0) return;
-  for (let card of cards) {
-    const saved = await new Card(card).save();
-    Logger.verbose("Added card: ", saved);
+  for (let task of tasks) {
+    const saved = await new Task(task).save();
+    Logger.verbose("Added task: ", saved);
   }
 };
 

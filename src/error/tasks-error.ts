@@ -1,4 +1,4 @@
-class BizCardsError extends Error {
+class TaskError extends Error {
   //props
   status: number;
   //constructor
@@ -9,4 +9,4 @@ class BizCardsError extends Error {
   }
 }
 
-export { BizCardsError };
+export { TaskError };

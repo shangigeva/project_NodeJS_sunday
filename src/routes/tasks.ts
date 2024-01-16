@@ -68,10 +68,6 @@ router.put("/:id", validateTask, validateToken, async (req, res, next) => {
     const task = await Task.findOneAndUpdate({ _id: id }, req.body, {
       new: true,
     });
-
-    console.log("User ID:", userId);
-    console.log("Task ID:", id);
-    console.log("Request Body:", req.body);
     if (!task) {
       return res
         .status(404)

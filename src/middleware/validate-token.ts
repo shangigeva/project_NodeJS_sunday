@@ -1,5 +1,5 @@
 import { RequestHandler, Request } from "express";
-import { BizCardsError } from "../error/biz-cards-error";
+import { TaskError } from "../error/tasks-error";
 import { auth } from "../service/auth-service";
 import { User } from "../database/model/user";
 
@@ -14,14 +14,14 @@ const extractToken = (req: Request) => {
   }
   console.log("omer");
 
-  throw new BizCardsError("token is missing in Authorization header", 400);
+  throw new TaskError("token is missing in Authorization header", 400);
 };
 const validateToken: RequestHandler = async (req, res, next) => {
   try {
     const token = extractToken(req);
     const { email } = auth.verifyJWT(token);
     const user = await User.findOne({ email });
-    if (!user) throw new BizCardsError("User does not exist", 401);
+    if (!user) throw new TaskError("User does not exist", 401);
     req.user = user;
     next();
   } catch (e) {

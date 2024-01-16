@@ -4,11 +4,12 @@ type ITaskInput = {
 export type ITask = ITaskInput & {
   //JWT=> userid
   TaskNumb?: number;
-  userId?: string;
   _id?: string;
   createdAt: Date;
   title: string;
+  subtitle: string;
   status: String;
   priority: String;
   label: String;
+  owner: String;
 };

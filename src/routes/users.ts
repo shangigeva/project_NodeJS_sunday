@@ -8,10 +8,11 @@ import { isAdminOrUser } from "../middleware/is-admin-or-user";
 import { isUser } from "../middleware/is-user";
 import { auth } from "../service/auth-service";
 import { Logger } from "../logs/logger";
+import { validateToken } from "../middleware/validate-token";
 
 const router = Router();
 // GET all users
-router.get("/users", async (req, res, next) => {
+router.get("/allusers", async (req, res, next) => {
   try {
     const allUsers = await User.find();
     res.json(allUsers);
@@ -35,7 +36,6 @@ router.put("/:id", isUser, validateRegistration, async (req, res, next) => {
 // GET a user
 router.get("/:id", isAdminOrUser, async (req, res, next) => {
   console.log(req.params);
-
   try {
     const { id } = req.params;
     const user = (await User.findById(id).lean()) as IUser;
@@ -99,12 +99,40 @@ router.post("/login", validateLogin, async (req, res, next) => {
 });
 
 // DELETE USER
-router.delete("/:id", isAdminOrUser, async (req, res, next) => {
+router.delete("/:id", isAdmin, validateToken, async (req, res, next) => {
   try {
     const { id } = req.params;
     const deleteUser = await User.findOneAndDelete({ _id: id });
+    if (!deleteUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
     Logger.verbose("deleted the user");
     return res.json(deleteUser);
+  } catch (e) {
+    Logger.error(`Error deleting user: ${e}`);
+    res.status(500).json({ error: "Internal Server Error" });
+    next(e);
+  }
+});
+
+// UPGRADE TO BUSINESS
+router.patch("/:id", isAdmin, validateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { isAdmin } = req.body;
+    if (typeof isAdmin !== "boolean") {
+      return res.status(400).json({ message: "Invalid isAdmin value" });
+    }
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: id },
+      { $set: { isAdmin: isAdmin } },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    Logger.verbose("updated the user's isBusiness property");
+    return res.status(200).json({ message: "Update successful", updatedUser });
   } catch (e) {
     next(e);
   }

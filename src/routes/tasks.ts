@@ -19,10 +19,10 @@ router.post("/", validateTask, validateToken, async (req, res, next) => {
 
     const userId = req.user?._id;
     if (!userId) {
-      throw new TaskError("User must have an id", 500);
+      throw new TaskError("Task must have an id", 500);
     }
     const saveTask = await createTask(req.body as ITaskInput, userId);
-    res.status(201).json({ message: "task saved", user: saveTask });
+    res.status(201).json({ message: "task saved", task: saveTask });
   } catch (e) {
     next(e);
   }
@@ -31,6 +31,8 @@ router.post("/", validateTask, validateToken, async (req, res, next) => {
 router.get("/", validateToken, async (req, res, next) => {
   try {
     const allTasks = await Task.find();
+    console.log(allTasks);
+
     return res.json(allTasks);
   } catch (e) {
     next(e);

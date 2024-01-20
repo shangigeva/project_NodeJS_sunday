@@ -5,7 +5,7 @@ export type ITask = ITaskInput & {
   //JWT=> userid
   TaskNumb?: number;
   _id?: string;
-  createdAt: Date;
+  createTime: Date;
   title: string;
   subtitle: string;
   status: String;

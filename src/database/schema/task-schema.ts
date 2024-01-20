@@ -2,6 +2,11 @@ import { Schema } from "mongoose";
 import { ITask } from "../../@types/task";
 
 const taskShema = new Schema<ITask>({
+  createTime: {
+    type: Date,
+    required: true,
+    // default: new Date(),
+  },
   TaskNumb: {
     type: Number,
     required: false,

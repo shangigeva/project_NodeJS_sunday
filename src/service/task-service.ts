@@ -9,8 +9,10 @@ const createTask = async (data: ITaskInput, userId: string) => {
   //random number that does not exist in the database:
   const task = new Task({
     ...data,
+    createTime: new Date(),
     TaskNumb: taskNumb,
   });
+  console.log(task);
 
   return task.save();
 };

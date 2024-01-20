@@ -2,18 +2,15 @@ import { ITaskInput } from "../@types/task";
 import { Task } from "../database/model/tasks";
 const createTask = async (data: ITaskInput, userId: string) => {
   //TaskNumb, userId
-  const task = new Task(data);
+  const maxTask = await Task.findOne({}, {}, { sort: { TaskNumb: -1 } });
+  const taskNumb = maxTask ? maxTask.TaskNumb! + 1 : 1;
 
   // Task.userId = userId;
   //random number that does not exist in the database:
-  while (true) {
-    const random = Math.floor(Math.random() * 1_000_000);
-    const dbRes = await Task.findOne({ TaskNumb: random });
-    if (!dbRes) {
-      // Task.TaskNumb = random;
-      break;
-    }
-  }
+  const task = new Task({
+    ...data,
+    TaskNumb: taskNumb,
+  });
 
   return task.save();
 };

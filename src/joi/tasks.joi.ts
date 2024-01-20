@@ -8,6 +8,7 @@ const schema = Joi.object<ITask>({
   priority: Joi.string().min(2).max(200).required(),
   label: Joi.string().min(2).max(200).required(),
   owner: Joi.string().min(2).max(200).required(),
+  project: Joi.string().min(2).max(200).required(),
 });
 
 export { schema as joiTaskSchema };

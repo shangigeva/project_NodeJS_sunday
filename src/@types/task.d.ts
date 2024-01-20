@@ -12,4 +12,5 @@ export type ITask = ITaskInput & {
   priority: String;
   label: String;
   owner: String;
+  project: String;
 };

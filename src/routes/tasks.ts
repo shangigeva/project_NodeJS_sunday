@@ -38,22 +38,28 @@ router.get("/", validateToken, async (req, res, next) => {
 });
 
 // GET MY CARDS
-router.get("/my-cards", validateToken, async (req, res, next) => {
+router.get("/mytasks", validateToken, async (req, res, next) => {
   try {
     const userId = req.user?._id!;
-    const tasks = await Task.find({ userId });
+    const tasks = await Task.find({});
     return res.json(tasks);
   } catch (e) {
     next(e);
   }
 });
 // GET CARD BY ID
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", validateToken, async (req, res, next) => {
   try {
     const { id } = req.params;
     const task = await Task.findById(id);
+    console.log(task);
+
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
     return res.json(task);
   } catch (e) {
+    console.error("Error fetching task details:", e);
     next(e);
   }
 });

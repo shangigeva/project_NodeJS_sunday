@@ -14,5 +14,6 @@ const taskShema = new Schema<ITask>({
   priority: { type: String, minlength: 2, maxlength: 200, required: true },
   label: { type: String, minlength: 2, maxlength: 200, required: true },
   owner: { type: String, minlength: 2, maxlength: 200, required: true },
+  project: { type: String, minlength: 2, maxlength: 200, required: true },
 });
 export { taskShema };

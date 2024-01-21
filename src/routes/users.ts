@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { ILogin, IUser } from "../@types/user";
 import { User } from "../database/model/user";
-import { validateLogin, validateRegistration } from "../middleware/validation";
+import {
+  validateEditUser,
+  validateLogin,
+  validateRegistration,
+} from "../middleware/validation";
 import { createUser, validateUser } from "../service/user-service";
 import { isAdmin } from "../middleware/is-admin";
 import { isAdminOrUser } from "../middleware/is-admin-or-user";
@@ -22,16 +26,21 @@ router.get("/allusers", async (req, res, next) => {
 });
 
 // EDIT user
-router.put("/:id", isUser, validateRegistration, async (req, res, next) => {
-  //hash the password:
-  req.body.password = await auth.hashPassword(req.body.password);
-  const savedUser = await User.findByIdAndUpdate(
-    { _id: req.params.id },
-    req.body,
-    { new: true }
-  );
-  res.json(savedUser);
-});
+router.put(
+  "/:id",
+  isAdmin,
+  validateToken,
+  validateEditUser,
+  async (req, res, next) => {
+    //hash the password:
+    const savedUser = await User.findByIdAndUpdate(
+      { _id: req.params.id },
+      req.body,
+      { new: true }
+    );
+    res.json(savedUser);
+  }
+);
 
 // GET a user
 router.get("/:id", isAdminOrUser, async (req, res, next) => {
@@ -115,7 +124,7 @@ router.delete("/:id", isAdmin, validateToken, async (req, res, next) => {
   }
 });
 
-// UPGRADE TO BUSINESS
+// UPGRADE TO ADMIN
 router.patch("/:id", isAdmin, validateToken, async (req, res, next) => {
   try {
     const { id } = req.params;

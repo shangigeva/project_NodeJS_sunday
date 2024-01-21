@@ -11,6 +11,8 @@ import { createTask } from "../service/task-service";
 import { Task } from "../database/model/tasks";
 
 const router = Router();
+type SortOrder = "asc" | "desc";
+
 // CREATE TASK
 router.post("/", validateTask, validateToken, async (req, res, next) => {
   try {
@@ -30,7 +32,11 @@ router.post("/", validateTask, validateToken, async (req, res, next) => {
 // GET ALL TASK
 router.get("/", validateToken, async (req, res, next) => {
   try {
-    const allTasks = await Task.find();
+    const sortBy = req.query.sortBy || "desc";
+    const sortOrder: SortOrder = sortBy === "asc" ? "asc" : "desc";
+
+    const allTasks = await Task.find().sort({ createTime: sortOrder });
+
     console.log(allTasks);
 
     return res.json(allTasks);

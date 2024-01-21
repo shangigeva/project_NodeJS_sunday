@@ -109,13 +109,19 @@ router.post("/login", validateLogin, async (req, res, next) => {
 
 // DELETE USER
 router.delete("/:id", isAdmin, validateToken, async (req, res, next) => {
+  console.log("nana", req.params);
+
   try {
     const { id } = req.params;
+    // check if the user im tryng to delete is noy myself
+    if (req.user && id === req.user._id!.toString()) {
+      return res.status(403).json({ error: "Cannot delete yourself" });
+    }
     const deleteUser = await User.findOneAndDelete({ _id: id });
     if (!deleteUser) {
       return res.status(404).json({ error: "User not found" });
     }
-    Logger.verbose("deleted the user");
+    Logger.verbose("Deleted the user");
     return res.json(deleteUser);
   } catch (e) {
     Logger.error(`Error deleting user: ${e}`);

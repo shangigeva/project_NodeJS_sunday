@@ -5,7 +5,6 @@ import { ITask, ITaskInput } from "../@types/task";
 import { validateToken } from "../middleware/validate-token";
 import { TaskError } from "../error/tasks-error";
 import { isUser } from "../middleware/is-user";
-import { isAdminOrUser } from "../middleware/is-admin-or-user";
 import { isAdmin } from "../middleware/is-admin";
 import { createTask } from "../service/task-service";
 import { Task } from "../database/model/tasks";
@@ -45,11 +44,11 @@ router.get("/", validateToken, async (req, res, next) => {
   }
 });
 
-// GET MY CARDS
+// GET MY tasks
 router.get("/mytasks", validateToken, async (req, res, next) => {
   try {
     const userId = req.user?._id!;
-    const tasks = await Task.find({});
+    const tasks = await Task.find({ owner: userId });
     return res.json(tasks);
   } catch (e) {
     next(e);

@@ -43,7 +43,7 @@ router.put(
 );
 
 // GET a user
-router.get("/:id", isAdminOrUser, async (req, res, next) => {
+router.get("/:id", validateToken, async (req, res, next) => {
   console.log(req.params);
   try {
     const { id } = req.params;

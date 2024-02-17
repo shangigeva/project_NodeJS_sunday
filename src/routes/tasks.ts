@@ -43,7 +43,62 @@ router.get("/", validateToken, async (req, res, next) => {
     next(e);
   }
 });
+// fetch all data for cards uin dashboard page. /dashboard
+router.get("/getDashboardData", validateToken, async (req, res, next) => {
+  try {
+    const createdToday = await Task.countDocuments({
+      createTime: {
+        $gte: new Date().setHours(0, 0, 0, 0),
+      },
+    });
+    const closeToday = await Task.countDocuments({
+      createTime: {
+        $gte: new Date().setHours(0, 0, 0, 0),
+      },
+      status: "done",
+    });
 
+    const closeTasks = await Task.countDocuments({ status: "done" });
+    const openTasks = await Task.countDocuments({
+      status: { $in: ["backlog", "todo", "in progress"] },
+    });
+
+    console.log("open tasks:" + openTasks);
+
+    return res.json({ openTasks, closeTasks, createdToday, closeToday });
+  } catch (e) {
+    next(e);
+  }
+});
+// fetch all data for cards uin dashboard page. /dashboard
+router.get("/getChartData", validateToken, async (req, res, next) => {
+  try {
+    const data = await Task.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 }, // this means that the count will increment by 1
+        },
+      },
+    ]);
+    return res.json(data);
+  } catch (e) {
+    next(e);
+  }
+});
+// RECENT TASK /DASHBOARD
+router.get("/recentTasks", validateToken, async (req, res, next) => {
+  try {
+    const sortBy = req.query.sortBy || "desc";
+    const sortOrder: SortOrder = sortBy === "asc" ? "asc" : "desc";
+
+    const allTasks = await Task.find().sort({ createTime: sortOrder }).limit(5);
+
+    return res.json(allTasks);
+  } catch (e) {
+    next(e);
+  }
+});
 // GET MY tasks
 router.get("/mytasks", validateToken, async (req, res, next) => {
   try {
@@ -96,7 +151,7 @@ router.put("/:id", validateTask, validateToken, async (req, res, next) => {
 router.delete("/:id", isAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deleteCard = await Task.findByIdAndDelete({ _id: id });
+    const deleteCard = await Task.findByIdAndDelete(id);
 
     if (!deleteCard) {
       return res.status(404).json({ error: "Task not found" });
@@ -153,4 +208,6 @@ router.patch("/:id/changeBizNum", isAdmin, async (req, res, next) => {
     next(e);
   }
 });
+//
+
 export { router as taskRouter };

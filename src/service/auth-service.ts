@@ -40,7 +40,7 @@ const authService = {
   },
   generateJWT: (payload: IJWTPayload) => {
     const secret = process.env.JWT_SECRET!;
-    const expiresIn = "1d";
+    const expiresIn = "4h";
     return jwt.sign({ payload }, secret, { expiresIn });
   },
   generateJWTUserId: (payload: IJWTPayloadUserId) => {

@@ -16,7 +16,7 @@ const app = express();
 app.use(
   cors({
     // allow my client side
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://192.168.50.243:5173"],
   })
 );
 app.use(express.static("public"));

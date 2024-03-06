@@ -1,4 +1,6 @@
+import { IProjectInput } from "../@types/project";
 import { ITaskInput } from "../@types/task";
+import { Project } from "../database/model/projects";
 import { Task } from "../database/model/tasks";
 const createTask = async (data: ITaskInput, userId: string) => {
   //TaskNumb, userId
@@ -17,4 +19,15 @@ const createTask = async (data: ITaskInput, userId: string) => {
   return task.save();
 };
 
-export { createTask };
+const createProject = async (data: IProjectInput, userId: string) => {
+  const project = new Project({
+    ...data,
+    createTime: new Date(),
+    value: data.label.toLowerCase(),
+  });
+  console.log(project);
+
+  return project.save();
+};
+
+export { createTask, createProject };

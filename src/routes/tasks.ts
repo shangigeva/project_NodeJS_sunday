@@ -6,8 +6,10 @@ import { validateToken } from "../middleware/validate-token";
 import { TaskError } from "../error/tasks-error";
 import { isUser } from "../middleware/is-user";
 import { isAdmin } from "../middleware/is-admin";
-import { createTask } from "../service/task-service";
+import { createProject, createTask } from "../service/task-service";
 import { Task } from "../database/model/tasks";
+import { IProject, IProjectInput } from "../@types/project";
+import { Project } from "../database/model/projects";
 
 const router = Router();
 type SortOrder = "asc" | "desc";
@@ -15,9 +17,7 @@ type SortOrder = "asc" | "desc";
 // CREATE TASK
 router.post("/", validateTask, validateToken, async (req, res, next) => {
   try {
-    console.log("imer the ");
     console.log(req.user);
-
     const userId = req.user?._id;
     if (!userId) {
       throw new TaskError("Task must have an id", 500);
@@ -28,16 +28,46 @@ router.post("/", validateTask, validateToken, async (req, res, next) => {
     next(e);
   }
 });
+
+// CREATE PROJECT
+router.post(
+  "/createProject",
+  validateToken,
+  isAdmin,
+  async (req, res, next) => {
+    try {
+      const userId = req.user?._id;
+      if (!userId) {
+        throw new TaskError("Task must have an id", 500);
+      }
+      const saveProject = await createProject(
+        req.body as IProjectInput,
+        userId
+      );
+      res.status(200).json({ message: "project saved", project: saveProject });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+// GET ALL PROJECTS
+router.get("/projects", validateToken, async (req, res, next) => {
+  try {
+    const allProjects = await Project.find();
+    res.json(allProjects);
+  } catch (e) {
+    next(e);
+  }
+});
+
 // GET ALL TASK
 router.get("/", validateToken, async (req, res, next) => {
   try {
     const sortBy = req.query.sortBy || "desc";
     const sortOrder: SortOrder = sortBy === "asc" ? "asc" : "desc";
-
     const allTasks = await Task.find().sort({ createTime: sortOrder });
-
     console.log(allTasks);
-
     return res.json(allTasks);
   } catch (e) {
     next(e);
@@ -109,7 +139,7 @@ router.get("/mytasks", validateToken, async (req, res, next) => {
     next(e);
   }
 });
-// GET CARD BY ID
+// GET TASK BY ID
 router.get("/:id", validateToken, async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -162,52 +192,5 @@ router.delete("/:id", isAdmin, async (req, res, next) => {
     next(e);
   }
 });
-
-// LIKE CARD
-router.patch("/:id", validateToken, async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user?._id;
-    if (!userId) {
-      throw new TaskError("User must have an id", 500);
-    }
-    const task = await Task.findById(id);
-    if (!task) {
-      return res.status(404).json({ error: "task not found" });
-    }
-    await task.save();
-    res.json({ task });
-  } catch (e) {
-    next(e);
-  }
-});
-// CHANGE TaskNumb
-router.patch("/:id/changeBizNum", isAdmin, async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { TaskNumb } = req.body;
-    if (!TaskNumb) {
-      return res
-        .status(400)
-        .json({ error: "TaskNumb is required for PATCH request" });
-    }
-    const task = await Task.findOneAndUpdate(
-      { _id: id },
-      { TaskNumb },
-      {
-        new: true,
-      }
-    );
-    if (!task) {
-      return res
-        .status(404)
-        .json({ error: "Task not found or user does not have permission" });
-    }
-    res.json({ task });
-  } catch (e) {
-    next(e);
-  }
-});
-//
 
 export { router as taskRouter };

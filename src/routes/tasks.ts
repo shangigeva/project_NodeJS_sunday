@@ -60,7 +60,6 @@ router.get("/projects", validateToken, async (req, res, next) => {
     next(e);
   }
 });
-
 // GET ALL TASK
 router.get("/", validateToken, async (req, res, next) => {
   try {

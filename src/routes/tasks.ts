@@ -81,7 +81,7 @@ router.get("/getDashboardData", validateToken, async (req, res, next) => {
       },
     });
     const closeToday = await Task.countDocuments({
-      createTime: {
+      updateTime: {
         $gte: new Date().setHours(0, 0, 0, 0),
       },
       status: "done",
@@ -162,9 +162,20 @@ router.put("/:id", validateTask, validateToken, async (req, res, next) => {
     if (!userId) {
       throw new TaskError("User must have an id", 500);
     }
-    const task = await Task.findOneAndUpdate({ _id: id }, req.body, {
-      new: true,
-    });
+
+    req.body = {
+      ...req.body,
+      updateTime: new Date(),
+    };
+
+    const task = await Task.findOneAndUpdate(
+      { _id: id },
+
+      req.body,
+      {
+        new: true,
+      }
+    );
     if (!task) {
       return res
         .status(404)

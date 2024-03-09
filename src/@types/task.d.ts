@@ -13,4 +13,5 @@ export type ITask = ITaskInput & {
   label: String;
   owner: String;
   project: String;
+  updateTime?: Date;
 };

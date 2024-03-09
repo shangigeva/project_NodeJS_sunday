@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import { ITask } from "../../@types/task";
 
-const taskShema = new Schema<ITask>({
+const taskSchema = new Schema<ITask>({
   createTime: {
     type: Date,
     required: true,
@@ -20,5 +20,10 @@ const taskShema = new Schema<ITask>({
   label: { type: String, minlength: 2, maxlength: 200, required: true },
   owner: { type: String, minlength: 2, maxlength: 200, required: true },
   project: { type: String, minlength: 2, maxlength: 200, required: true },
+  updateTime: {
+    type: Date,
+    required: false,
+    // default: new Date(),
+  },
 });
-export { taskShema };
+export { taskSchema };

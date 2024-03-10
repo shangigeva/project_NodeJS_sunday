@@ -13,6 +13,7 @@ configDotEnv();
 connect();
 
 const app = express();
+app.use(json({ limit: "10mb" }));
 app.use(
   cors({
     // allow my client side

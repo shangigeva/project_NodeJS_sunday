@@ -45,6 +45,7 @@ const userSchema = new Schema<IUser>({
     required: false,
     default: new Date(),
   },
+  picture: { type: String, required: false, maxlength: 100 },
   failedLoginAttempts: { type: Number, default: 0, required: false },
   lastFailedLogin: { type: Date, required: false },
 });

@@ -191,13 +191,13 @@ router.put("/:id", validateTask, validateToken, async (req, res, next) => {
 router.delete("/:id", isAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deleteCard = await Task.findByIdAndDelete(id);
+    const deleteTask = await Task.findByIdAndDelete(id);
 
-    if (!deleteCard) {
+    if (!deleteTask) {
       return res.status(404).json({ error: "Task not found" });
     }
 
-    return res.json(deleteCard);
+    return res.json(deleteTask);
   } catch (e) {
     next(e);
   }

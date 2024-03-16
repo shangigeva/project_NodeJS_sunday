@@ -8,6 +8,7 @@ import morgan from "morgan";
 import cors from "cors";
 import { Logger } from "./logs/logger";
 import { taskRouter } from "./routes/tasks";
+import { User } from "./database/model/user";
 
 configDotEnv();
 connect();
@@ -25,8 +26,13 @@ app.use(
   })
 );
 app.use(express.static("public"));
-app.get("/", (req, res) => {
-  res.json({ message: "omer" });
+app.get("/", async (req, res) => {
+  try {
+    const allUsers = await User.find();
+    res.json(allUsers);
+  } catch (e) {
+    console.log(e);
+  }
 });
 // middleware chain:
 app.use(json());

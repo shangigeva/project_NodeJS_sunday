@@ -70,53 +70,48 @@ router.post(
 );
 
 // LOGIN
-router.post(
-  "/login",
-  bodyParser,
-  validateLogin,
-  async (req: any, res: any, next) => {
-    console.log("got here");
+router.post("/login", validateLogin, async (req: any, res: any, next) => {
+  console.log("got here");
+
+  try {
+    // Extract data from the request
+    const { email, password } = req.body as ILogin;
+    console.log(req.body);
 
     try {
-      // Extract data from the request
-      const { email, password } = req.body as ILogin;
-      console.log(req.body);
+      const jwt = await validateUser(email, password);
+      console.log(jwt);
 
-      try {
-        const jwt = await validateUser(email, password);
-        console.log(jwt);
-
-        // Successful login
-        res.json(jwt);
-      } catch (e) {
-        // Failed login
-        Logger.error("Login failed:", e);
-        // Check if the user is blocked
-        if (e === "User is blocked. Try again later.") {
-          // Send a response indicating that the user is blocked
-          return res
-            .status(401)
-            .json({ error: "User is blocked. Try again later." });
-        } else {
-          // Send a generic error response
-          res.status(401).json({ error: "Invalid email or password." });
-          const userId = req.user?._id;
-          if (userId) {
-            try {
-              // Handle failed login attempts for the user
-              await auth.handleFailedLogin(userId);
-            } catch (error) {
-              console.error("Failed to handle login:", error);
-            }
+      // Successful login
+      res.json(jwt);
+    } catch (e) {
+      // Failed login
+      Logger.error("Login failed:", e);
+      // Check if the user is blocked
+      if (e === "User is blocked. Try again later.") {
+        // Send a response indicating that the user is blocked
+        return res
+          .status(401)
+          .json({ error: "User is blocked. Try again later." });
+      } else {
+        // Send a generic error response
+        res.status(401).json({ error: "Invalid email or password." });
+        const userId = req.user?._id;
+        if (userId) {
+          try {
+            // Handle failed login attempts for the user
+            await auth.handleFailedLogin(userId);
+          } catch (error) {
+            console.error("Failed to handle login:", error);
           }
         }
       }
-    } catch (error) {
-      // Handle other errors
-      next(error);
     }
+  } catch (error) {
+    // Handle other errors
+    next(error);
   }
-);
+});
 
 // DELETE USER
 router.delete(

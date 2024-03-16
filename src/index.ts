@@ -42,7 +42,7 @@ app.use("/api/v1/tasks", taskRouter);
 app.use(errorHandler);
 app.use(notFound);
 
-app.listen(3002);
+app.listen(3000);
 // const PORT = process.env.PORT ?? 8081;
 // app.listen(process.env.PORT, () => {
 //   // callback when the app is running:

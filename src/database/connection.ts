@@ -7,6 +7,7 @@ const connect = async () => {
   try {
     //read the connection string from dotenv file:
     const connectionString = process.env.DB_CONNECTION_STRING;
+    console.log("edit env");
 
     if (!connectionString) {
       Logger.error("DB_CONNECTION_STRING IS NOT DEFINED IN your .env file");

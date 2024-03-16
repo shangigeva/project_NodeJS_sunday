@@ -25,6 +25,9 @@ app.use(
   })
 );
 app.use(express.static("public"));
+app.get("/", (req, res) => {
+  res.json({ message: "omer" });
+});
 // middleware chain:
 app.use(json());
 app.use(morgan("dev"));

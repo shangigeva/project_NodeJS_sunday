@@ -24,6 +24,8 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.2",
     "@types/cors": "^2.8.17",
     "@types/morgan": "^1.9.9",
     "bcrypt": "^5.1.1",

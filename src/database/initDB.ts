@@ -13,8 +13,8 @@ const initDB = async () => {
   }
 
   //add 3 tasks
-  const cardsCount = await Task.countDocuments();
-  if (cardsCount != 0) return;
+  const taskCount = await Task.countDocuments();
+  if (taskCount != 0) return;
   for (let task of tasks) {
     const saved = await new Task(task).save();
     Logger.verbose("Added task: ", saved);

@@ -8,7 +8,6 @@ import {
 } from "../middleware/validation";
 import { createUser, validateUser } from "../service/user-service";
 import { isAdmin } from "../middleware/is-admin";
-import { isAdminOrUser } from "../middleware/is-admin-or-user";
 import { isUser } from "../middleware/is-user";
 import { auth } from "../service/auth-service";
 import { Logger } from "../logs/logger";
@@ -152,4 +151,32 @@ router.patch("/:id", isAdmin, validateToken, async (req, res, next) => {
     next(e);
   }
 });
+// ADD PROFILE IMAGE
+router.patch(
+  "/:id/updatePicture",
+  validateToken,
+  isUser,
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      console.log(req.params);
+
+      const updatedImage = await User.findOneAndUpdate(
+        { _id: id },
+        { $set: { picture: req.body.picture } },
+        { new: true }
+      );
+      if (!updatedImage) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      Logger.verbose("updated the user's isBusiness property");
+      return res
+        .status(200)
+        .json({ message: "Update successful", updatedImage });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
 export { router as usersRouter };

@@ -9,6 +9,7 @@ type IUser = {
   _id?: string;
   failedLoginAttempts: number;
   lastFailedLogin: Date;
+  picture?: string;
 };
 
 type ILogin = {

@@ -23,7 +23,5 @@ const bodyParser: RequestHandler = (req, res, next) => {
   });
 };
 
-// default export:
 export default bodyParser;
-// named export:
 export { bodyParser };

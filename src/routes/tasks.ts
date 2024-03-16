@@ -4,7 +4,6 @@ import { validateTask } from "../middleware/validation";
 import { ITask, ITaskInput } from "../@types/task";
 import { validateToken } from "../middleware/validate-token";
 import { TaskError } from "../error/tasks-error";
-import { isUser } from "../middleware/is-user";
 import { isAdmin } from "../middleware/is-admin";
 import { createProject, createTask } from "../service/task-service";
 import { Task } from "../database/model/tasks";
@@ -191,13 +190,13 @@ router.put("/:id", validateTask, validateToken, async (req, res, next) => {
 router.delete("/:id", isAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deleteCard = await Task.findByIdAndDelete(id);
+    const deleteTask = await Task.findByIdAndDelete(id);
 
-    if (!deleteCard) {
+    if (!deleteTask) {
       return res.status(404).json({ error: "Task not found" });
     }
 
-    return res.json(deleteCard);
+    return res.json(deleteTask);
   } catch (e) {
     next(e);
   }

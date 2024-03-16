@@ -14,9 +14,5 @@ const configDotEnv = () => {
   config({ path: `src/config/${mode}.env` });
 };
 
-// export the function
 export default configDotEnv;
-// export the function
 export { configDotEnv };
-
-// import {configDotEnv} from 'src/config'

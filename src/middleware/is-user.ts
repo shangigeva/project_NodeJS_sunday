@@ -5,7 +5,7 @@ import { extractToken } from "./is-admin";
 import { TaskError } from "../error/tasks-error";
 import { IUser } from "../@types/user";
 
-const isUser: RequestHandler = async (req, res, next) => {
+const isUser: RequestHandler = async (req: any, res: any, next) => {
   try {
     const { id } = req.params;
     const token = extractToken(req);

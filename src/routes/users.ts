@@ -15,7 +15,7 @@ import { validateToken } from "../middleware/validate-token";
 
 const router = Router();
 // GET all users
-router.get("/allusers", async (req, res, next) => {
+router.get("/allusers", async (req: any, res: any, next) => {
   try {
     const allUsers = await User.find();
     res.json(allUsers);
@@ -30,7 +30,7 @@ router.put(
   isAdmin,
   validateToken,
   validateEditUser,
-  async (req, res, next) => {
+  async (req: any, res: any, next) => {
     //hash the password:
     const savedUser = await User.findByIdAndUpdate(
       { _id: req.params.id },
@@ -42,7 +42,7 @@ router.put(
 );
 
 // GET a user
-router.get("/:id", validateToken, async (req, res, next) => {
+router.get("/:id", validateToken, async (req: any, res: any, next) => {
   console.log(req.params);
   try {
     const { id } = req.params;
@@ -55,17 +55,21 @@ router.get("/:id", validateToken, async (req, res, next) => {
 });
 
 // REGISTER
-router.post("/register", validateRegistration, async (req, res, next) => {
-  try {
-    const saved = await createUser(req.body as IUser);
-    res.status(201).json({ message: "Saved", user: saved });
-  } catch (err) {
-    next(err);
+router.post(
+  "/register",
+  validateRegistration,
+  async (req: any, res: any, next) => {
+    try {
+      const saved = await createUser(req.body as IUser);
+      res.status(201).json({ message: "Saved", user: saved });
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 // LOGIN
-router.post("/login", validateLogin, async (req, res, next) => {
+router.post("/login", validateLogin, async (req: any, res: any, next) => {
   try {
     // Extract data from the request
     const { email, password } = req.body as ILogin;
@@ -107,56 +111,68 @@ router.post("/login", validateLogin, async (req, res, next) => {
 });
 
 // DELETE USER
-router.delete("/:id", isAdmin, validateToken, async (req, res, next) => {
-  console.log("nana", req.params);
+router.delete(
+  "/:id",
+  isAdmin,
+  validateToken,
+  async (req: any, res: any, next) => {
+    console.log("nana", req.params);
 
-  try {
-    const { id } = req.params;
-    // check if the user im tryng to delete is noy myself
-    if (req.user && id === req.user._id!.toString()) {
-      return res.status(403).json({ error: "Cannot delete yourself" });
+    try {
+      const { id } = req.params;
+      // check if the user im tryng to delete is noy myself
+      if (req.user && id === req.user._id!.toString()) {
+        return res.status(403).json({ error: "Cannot delete yourself" });
+      }
+      const deleteUser = await User.findOneAndDelete({ _id: id });
+      if (!deleteUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      Logger.verbose("Deleted the user");
+      return res.json(deleteUser);
+    } catch (e) {
+      Logger.error(`Error deleting user: ${e}`);
+      res.status(500).json({ error: "Internal Server Error" });
+      next(e);
     }
-    const deleteUser = await User.findOneAndDelete({ _id: id });
-    if (!deleteUser) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    Logger.verbose("Deleted the user");
-    return res.json(deleteUser);
-  } catch (e) {
-    Logger.error(`Error deleting user: ${e}`);
-    res.status(500).json({ error: "Internal Server Error" });
-    next(e);
   }
-});
+);
 
 // UPGRADE TO ADMIN
-router.patch("/:id", isAdmin, validateToken, async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { isAdmin } = req.body;
-    if (typeof isAdmin !== "boolean") {
-      return res.status(400).json({ message: "Invalid isAdmin value" });
+router.patch(
+  "/:id",
+  isAdmin,
+  validateToken,
+  async (req: any, res: any, next) => {
+    try {
+      const { id } = req.params;
+      const { isAdmin } = req.body;
+      if (typeof isAdmin !== "boolean") {
+        return res.status(400).json({ message: "Invalid isAdmin value" });
+      }
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: id },
+        { $set: { isAdmin: isAdmin } },
+        { new: true }
+      );
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      Logger.verbose("updated the user's isBusiness property");
+      return res
+        .status(200)
+        .json({ message: "Update successful", updatedUser });
+    } catch (e) {
+      next(e);
     }
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: id },
-      { $set: { isAdmin: isAdmin } },
-      { new: true }
-    );
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    Logger.verbose("updated the user's isBusiness property");
-    return res.status(200).json({ message: "Update successful", updatedUser });
-  } catch (e) {
-    next(e);
   }
-});
+);
 // ADD PROFILE IMAGE
 router.patch(
   "/:id/updatePicture",
   validateToken,
   isUser,
-  async (req, res, next) => {
+  async (req: any, res: any, next) => {
     try {
       const { id } = req.params;
       console.log(req.params);

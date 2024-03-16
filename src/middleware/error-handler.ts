@@ -2,7 +2,7 @@ import e, { ErrorRequestHandler } from "express";
 import { TaskError } from "../error/tasks-error";
 import { Logger } from "../logs/logger";
 
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, req: any, res: any, next) => {
   Logger.error(err);
   //userService Error
   if (err instanceof TaskError) {

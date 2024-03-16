@@ -18,7 +18,7 @@ const extractToken = (req: Request) => {
   throw new TaskError("token is missing in Authorization header", 400);
 };
 
-const isAdmin: RequestHandler = async (req, res, next) => {
+const isAdmin: RequestHandler = async (req: any, res: any, next) => {
   const token = extractToken(req);
   const { email } = auth.verifyJWT(token);
   //get user from database
